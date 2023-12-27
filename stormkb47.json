@@ -65,13 +65,20 @@
     "Alt",
     {
       "a": 7,
-      "w": 4
+      "w": 3
     },
     "",
     {
       "a": 4
     },
     "AltGr",
+    {
+      "a": 7
+    },
+    "<i class='kb kb-Hamburger-Menu'></i>",
+    {
+      "a": 4
+    },
     "|\n\\",
     "<i class='fa fa-caret-left'></i>\nHome",
     "<i class='fa fa-caret-down'></i>\nPgDn",

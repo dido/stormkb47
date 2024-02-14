@@ -18,8 +18,8 @@
     "I\n\n\n\n\n\n\n\n\n*\n8",
     "O\n\n\n\n\n\n\n\n\n(\n9",
     "P\n\n\n\n\n\n\n\n\n)\n0",
-    "{\n[\n_\n-",
-    "}\n]\n+\n="
+    "{\n[\n}\n]",
+    "&larr;\nDel"
   ],
   [
     {
@@ -54,9 +54,9 @@
     "N\nSysRq",
     "M\n\n\n\n\n\n\nF10",
     "<\n,\n\n\n\n\n\nF11",
-    ">\n,\n\n\n\n\n\nF12",
+    ">\n.\n\n\n\n\n\nF12",
     "<i class='fa fa-caret-up'></i>\nPgUp",
-    "?\n/"
+    "?\n/\n+\n="
   ],
   [
     "Ctrl",
@@ -79,7 +79,7 @@
     {
       "a": 4
     },
-    "|\n\\",
+    "_\n-\n|\n\\",
     "<i class='fa fa-caret-left'></i>\nHome",
     "<i class='fa fa-caret-down'></i>\nPgDn",
     "<i class='fa fa-caret-right'></i>\nEnd"

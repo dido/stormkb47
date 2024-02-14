@@ -1,5 +1,6 @@
 #include <pins_arduino.h>
 #include <Keyboard.h>
+#include <FastLED.h>
 
 // Arduino pins associated with columns and rows for the
 // keyboard matrix
@@ -24,6 +25,45 @@ const byte row3 = A2;
 const byte row4 = A3;
 
 #define USE_KEYBOARD
+#define USE_LED
+
+#ifdef USE_LED
+#define LED_PIN A5
+#define NUM_LEDS    14
+#define BRIGHTNESS  64
+#define LED_TYPE    WS2811
+#define COLOR_ORDER GRB
+
+CRGB leds[NUM_LEDS];
+
+CRGBPalette16 currentPalette;
+TBlendType    currentBlending;
+
+extern CRGBPalette16 myRedWhiteBluePalette;
+extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
+int backlightOn;
+
+
+#endif
+
+void toggleBackLight()
+{
+#ifdef USE_LED
+  for( int i = 0; i < 16; ++i) {
+    currentPalette[i] = (backlightOn) ?  CRGB(0,0,0) : CRGB(96, 96, 255);
+  }
+  currentBlending = LINEARBLEND;
+
+  int colorIndex = 0;
+  for( int i = 0; i < NUM_LEDS; ++i) {
+
+    leds[i] = ColorFromPalette( currentPalette, colorIndex, BRIGHTNESS, currentBlending);
+    colorIndex += 3;
+  }
+  FastLED.show();
+  backlightOn = !backlightOn;
+#endif
+}
 
 void setup(void) {
 #ifdef USE_KEYBOARD
@@ -31,6 +71,15 @@ void setup(void) {
 #else
   Serial.begin(9600);
 #endif
+
+  delay(3000); // power-up safety delay
+#ifdef USE_LED
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  FastLED.setBrightness(BRIGHTNESS);
+  backlightOn = 0;
+  toggleBackLight();
+#endif
+
   // basically we are setting rows to High-Z outputs which we will enable one by one in our keyboard scan routine
   
   digitalWrite(row1, LOW); // turn off pullup
@@ -97,6 +146,7 @@ unsigned long last_dbtime = 0;
 void loop(void) {
   unsigned char key = 0x00;
   unsigned char mods = 0x00;
+  delay(10);
 
   pinMode(row1, OUTPUT); 
   digitalWrite(row1, LOW);
@@ -164,7 +214,7 @@ void loop(void) {
   if (digitalRead(col7)==0) {  } // (not used)
   if (digitalRead(col8)==0) { mods |= MOD_RALT; } // Right Alt
   if (digitalRead(col9)==0) { key = KEY_MENU; } // Menu?
-  if (digitalRead(col10)==0) { key = '\\'; } // | backslash
+  if (digitalRead(col10)==0) { key = '-'; } // - _
   if (digitalRead(col11)==0) { key = KEY_LEFT_ARROW; } // Left Arrow Home
   if (digitalRead(col12)==0) { key = KEY_DOWN_ARROW; } // Down Arrow PgDn
   if (digitalRead(col13)==0) { key = KEY_RIGHT_ARROW; } // Right Arrow End
@@ -285,8 +335,8 @@ void loop(void) {
      case '/':
         key = '=';
         break;
-     case '\\':
-        key = '-';
+     case '-':
+        key = '\\';
         break;
      case KEY_LEFT_ARROW:
         key = KEY_HOME;
@@ -450,7 +500,9 @@ void loop(void) {
 #ifdef USE_KEYBOARD
   if (prevkey != key || prevmods != mods) {
     Keyboard.releaseAll();
-    if (mods & MOD_SHIFT && key == 0x00)
+    if (key == KEY_RETURN && mods & MOD_FN)
+      toggleBackLight();
+    if (mods & MOD_SHIFT)
       Keyboard.press(KEY_LEFT_SHIFT);
     if (mods & MOD_CTRL)
       Keyboard.press(KEY_LEFT_CTRL);
@@ -552,7 +604,7 @@ void loop(void) {
   if (digitalRead(col7)==0) { *keyptr++ = 0x47; } // (not used)
   if (digitalRead(col8)==0) { *keyptr++ = 0x48; } // Right Alt
   if (digitalRead(col9)==0) { *keyptr++ = 0x49; } // Menu?
-  if (digitalRead(col10)==0) { *keyptr++ = 0x4a; } // | backslash
+  if (digitalRead(col10)==0) { *keyptr++ = 0x4a; } // - _
   if (digitalRead(col11)==0) { *keyptr++ = 0x4b; } // Left Arrow Home
   if (digitalRead(col12)==0) { *keyptr++ = 0x4c; } // Down Arrow PgDn
   if (digitalRead(col13)==0) { *keyptr++ = 0x4d; } // Right Arrow End
